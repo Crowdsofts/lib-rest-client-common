@@ -18,13 +18,13 @@ class ClientWithOptionsTest extends TestCase
 {
     public function testExceptionThrownWhenMissingUrlPlaceholders()
     {
+        $this->expectException(ConfigurationException::class);
         TestClientFactoryWithBaseUrlParams::setHandler(
             new MockHandler([
                 new Response(StatusCodeInterface::STATUS_NO_CONTENT),
             ])
         );
 
-        $this->setExpectedException(ConfigurationException::class);
         new TestClientFactoryWithBaseUrlParams([]);
     }
 

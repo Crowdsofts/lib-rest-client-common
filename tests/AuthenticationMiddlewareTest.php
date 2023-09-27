@@ -14,7 +14,7 @@ use Psr\Http\Message\RequestInterface;
 
 class AuthenticationMiddlewareTest extends TestCase
 {
-    public function testOAuthAuthenticationWithMacAdded()
+    public function testOAuthAuthenticationWithMacAdded(): void
     {
         $config = [
             OAuthAuthentication::TYPE => [
@@ -71,10 +71,10 @@ class AuthenticationMiddlewareTest extends TestCase
             $auth = $request->getHeaderLine('Authorization');
             if ($key === 2) {
                 // on token refresh there should be no MAC token added
-                $this->assertFalse(strpos($auth, 'MAC') === 0);
+                $this->assertFalse(str_starts_with($auth, 'MAC'));
 
             } else {
-                $this->assertTrue(strpos($auth, 'MAC') === 0);
+                $this->assertTrue(str_starts_with($auth, 'MAC'));
             }
         }
     }
@@ -112,11 +112,9 @@ class AuthenticationMiddlewareTest extends TestCase
         $this->assertSame('Basic ' . base64_encode(sprintf('%s:%s', $username, $password)), $auth);
     }
 
-    /**
-     * @expectedException \Paysera\Component\RestClientCommon\Exception\ClientException
-     */
-    public function testUnauthorizedResponse()
+    public function testUnauthorizedResponse(): void
     {
+        $this->expectException(\Paysera\Component\RestClientCommon\Exception\ClientException::class);
         TestClientFactory::setHandler(
             new MockHandler([
                 new Response(StatusCodeInterface::STATUS_UNAUTHORIZED),

@@ -11,23 +11,28 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * @api
  */
-class RequestException extends Exception
+class RequestException extends \Exception
 {
-    private $request;
-    private $response;
-    private $error;
-    private $errors;
-    private $errorProperties;
-    private $errorDescription;
+    private RequestInterface $request;
+
+    private ResponseInterface $response;
+
+    private ?string $error = null;
+
+    private ?array $errors = null;
+
+    private ?array $errorProperties = null;
+
+    private ?string $errorDescription = null;
 
     /**
-     * @param string $message
-     * @param RequestInterface $request
+     * @param string            $message
+     * @param RequestInterface  $request
      * @param ResponseInterface $response
-     * @param Exception|null $previous
+     * @param Exception|null    $previous
      */
     public function __construct(
-        $message,
+        string $message,
         RequestInterface $request,
         ResponseInterface $response,
         Exception $previous = null
@@ -41,7 +46,7 @@ class RequestException extends Exception
     /**
      * @return RequestInterface
      */
-    public function getRequest()
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }
@@ -72,7 +77,7 @@ class RequestException extends Exception
     /**
      * @return null|array
      */
-    public function getErrors()
+    public function getErrors(): ?array
     {
         return $this->errors;
     }
@@ -94,7 +99,7 @@ class RequestException extends Exception
 
     private function setErrorDescription($errorDescription)
     {
-        $this->errorDescription  = $errorDescription;
+        $this->errorDescription = $errorDescription;
 
         return $this;
     }
@@ -116,14 +121,14 @@ class RequestException extends Exception
 
     public static function create(RequestInterface $request, ResponseInterface $response)
     {
-        $exception = new static(null, $request, $response);
+        $exception = new static('', $request, $response);
 
         if (!$response->getBody()->isReadable()) {
             return $exception;
         }
 
         try {
-            $decodedResponse = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+            $decodedResponse = \json_decode($response->getBody()->getContents(), true);
         } catch (RuntimeException $runtimeException) {
             return $exception;
         } catch (InvalidArgumentException $invalidArgumentException) {

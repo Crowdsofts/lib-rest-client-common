@@ -16,7 +16,7 @@ class ClientExceptionTest extends TestCase
 {
     private $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = [
             OAuthAuthentication::TYPE => [
@@ -87,6 +87,7 @@ class ClientExceptionTest extends TestCase
 
     public function testExceptionResponseWhenStreaming()
     {
+        $this->expectException(ClientException::class);
         TestClientFactory::setHandler(
             new MockHandler([
                 new Response(
@@ -103,7 +104,6 @@ class ClientExceptionTest extends TestCase
         $factory = new TestClientFactory($this->config);
         $client = $factory->getTestClient();
 
-        $this->setExpectedException(ClientException::class);
 
         $client->getSomething();
     }
